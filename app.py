@@ -23,10 +23,24 @@ def load_data(path="data/BMW sales data (2010-2024) (1).csv"):
 df = load_data()
 
 
+st.sidebar.header("🔎 Filters")
+
+
+years = st.sidebar.multiselect(
+    "Select Year(s)",
+    options=df["Year"].sort_values().unique(),
+    default=df["Year"].sort_values().unique()
+)
+
+
+
+
+filtered_df = df[
+    (df["Year"].isin(years)) 
+   
+]
+
 st.markdown("<h1 style='text-align:center;'>BMW Sales Dashboard (2010–2024)</h1>", unsafe_allow_html=True)
-
-
-
 
 st.markdown("## 📊 Key Performance Indicators")
 
