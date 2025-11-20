@@ -38,11 +38,18 @@ models = st.sidebar.multiselect(
     default=df["Model"].unique()
 )
 
+fuel_types = st.sidebar.multiselect(
+    "Select Fuel Type(s)",
+    options=df["Fuel_Type"].unique(),
+    default=df["Fuel_Type"].unique()
+)
+
 
 
 filtered_df = df[
     (df["Year"].isin(years)) &
-    (df["Model"].isin(models))
+    (df["Model"].isin(models))&
+    (df["Fuel_Type"].isin(fuel_types))
    
 ]
 
