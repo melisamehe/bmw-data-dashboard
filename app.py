@@ -23,35 +23,21 @@ def load_data(path="data/BMW sales data (2010-2024) (1).csv"):
 df = load_data()
 
 
-st.sidebar.header("🔎 Filters")
+with st.sidebar:
+    st.image("https://upload.wikimedia.org/wikipedia/commons/4/44/BMW.svg", width=110)
+    st.markdown("## 🎛️ Filters")
+    min_year = int(df['Year'].min())
+    max_year = int(df['Year'].max())
+    year_range = st.slider("Select Year Range", min_year, max_year, (2015, max_year))
 
+    regions = sorted(df['Region'].dropna().unique().tolist())
+    selected_regions = st.multiselect("Select Regions", regions, default=regions)
 
-years = st.sidebar.multiselect(
-    "Select Year(s)",
-    options=df["Year"].sort_values().unique(),
-    default=df["Year"].sort_values().unique()
-)
+    top_models = df['Model'].value_counts().nlargest(10).index.tolist()
+    selected_models = st.multiselect("Select Models (top 10)", top_models, default=top_models[:4])
 
-models = st.sidebar.multiselect(
-    "Select Model(s)",
-    options=df["Model"].unique(),
-    default=df["Model"].unique()
-)
-
-fuel_types = st.sidebar.multiselect(
-    "Select Fuel Type(s)",
-    options=df["Fuel_Type"].unique(),
-    default=df["Fuel_Type"].unique()
-)
-
-
-
-filtered_df = df[
-    (df["Year"].isin(years)) &
-    (df["Model"].isin(models))&
-    (df["Fuel_Type"].isin(fuel_types))
-   
-]
+    fuel_types = sorted(df['Fuel_Type'].dropna().unique().tolist())
+    selected_fuels = st.multiselect("Fuel Types", fuel_types, default=fuel_types)
 
 st.markdown("<h1 style='text-align:center;'>BMW Sales Dashboard (2010–2024)</h1>", unsafe_allow_html=True)
 
