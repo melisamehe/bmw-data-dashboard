@@ -32,11 +32,17 @@ years = st.sidebar.multiselect(
     default=df["Year"].sort_values().unique()
 )
 
+models = st.sidebar.multiselect(
+    "Select Model(s)",
+    options=df["Model"].unique(),
+    default=df["Model"].unique()
+)
 
 
 
 filtered_df = df[
-    (df["Year"].isin(years)) 
+    (df["Year"].isin(years)) &
+    (df["Model"].isin(models))
    
 ]
 
