@@ -77,20 +77,19 @@ with st.sidebar:
 #Sayfa Başlığı kısmı
 st.markdown("<h1 style='text-align:center;'>BMW Sales Dashboard (2010–2024)</h1>", unsafe_allow_html=True)
 
-st.markdown("## 📊 Key Performance Indicators")
 
-k1, k2, k3 = st.columns(3)
+# Gösterge kartları
+total_sales = int(df_filtered['Sales_Volume'].sum()) if len(df_filtered) > 0 else 0
+avg_price = df_filtered['Price_USD'].mean() if len(df_filtered) > 0 else 0
+median_mileage = df_filtered['Mileage_KM'].median() if len(df_filtered) > 0 else 0
 
+k1, k2, k3 = st.columns([1,1,1])
 with k1:
-    st.metric("Total Sales", f"{df['Sales_Volume'].sum():,}")
-
+    st.markdown(f"""<div class="kpi-card"><h3>Total Sales</h3><h2>{total_sales:,}</h2><div class="muted">Filtered total sales</div></div>""", unsafe_allow_html=True)
 with k2:
-    avg_price = df["Price_USD"].mean()
-    st.metric("Average Price", f"${avg_price:,.0f}")
-
+    st.markdown(f"""<div class="kpi-card"><h3>Average Price</h3><h2>${avg_price:,.0f}</h2><div class="muted">Filtered average</div></div>""", unsafe_allow_html=True)
 with k3:
-    median_mileage = df["Mileage_KM"].median()
-    st.metric("Median Mileage", f"{median_mileage:,.0f} KM")
+    st.markdown(f"""<div class="kpi-card"><h3>Median Mileage</h3><h2>{median_mileage:,.0f} KM</h2><div class="muted">Filtered median</div></div>""", unsafe_allow_html=True)
 
 
 st.markdown("## 📈 Visualizations")
