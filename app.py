@@ -134,6 +134,52 @@ with k3:
     st.markdown(f"""<div class="kpi-card"><h3>Median Mileage</h3><h2>{median_mileage:,.0f} KM</h2><div class="muted">Filtered median</div></div>""", unsafe_allow_html=True)
 
 
+# Otomatik analiz kartları
+
+st.subheader("🔎 Automatic Dataset Insights")
+
+
+try:
+    top_model_name = model_sales.iloc[0]['Model'] if 'model_sales' in locals() and len(model_sales) > 0 else (df_filtered['Model'].mode().iloc[0] if len(df_filtered) > 0 else "N/A")
+    top_model_sales = model_sales.iloc[0]['Sales_Volume'] if 'model_sales' in locals() and len(model_sales) > 0 else (df_filtered.groupby('Model')['Sales_Volume'].sum().max() if len(df_filtered) > 0 else 0)
+except Exception:
+    top_model_name = "N/A"
+    top_model_sales = 0
+
+most_common_fuel = df_filtered['Fuel_Type'].mode().iloc[0] if (len(df_filtered) > 0 and not df_filtered['Fuel_Type'].mode().empty) else "N/A"
+
+ins1 = f"• Between {year_range[0]} and {year_range[1]}, BMW sold a total of **{total_sales:,} units** in the selected regions."
+ins2 = f"• The average price for the selected models is **${avg_price:,.0f}**, suggesting a strong premium segment." if avg_price > 0 else "• Average price: N/A"
+ins3 = f"• Median mileage of **{median_mileage:,.0f} KM** indicates that most sold vehicles are lightly used." if median_mileage > 0 else "• Median mileage: N/A"
+ins4 = f"• Top-selling model: **{top_model_name}** with **{int(top_model_sales):,} sales**." if top_model_name != "N/A" else "• Top-selling model: N/A"
+ins5 = f"• Fuel type distribution is dominated by **{most_common_fuel}**." if most_common_fuel != "N/A" else "• Fuel type: N/A"
+
+insights = [ins1, ins2, ins3, ins4, ins5]
+
+
+cols_ins = st.columns(3)
+for i, col in enumerate(cols_ins):
+    text = insights[i] if i < len(insights) else ""
+    col.markdown(f"""
+    <div style="
+        background:white;
+        color:black;
+        padding:18px;
+        border-radius:12px;
+        box-shadow:0px 6px 22px rgba(0,0,0,0.07);
+        margin-bottom:12px;
+    ">
+        {text}
+    </div>
+    """, unsafe_allow_html=True)
+
+
+if len(insights) > 3:
+    remaining = insights[3:]
+    for r in remaining:
+        st.markdown(f"<div style='background:white;color:black;padding:12px;border-radius:10px;margin-bottom:8px;'>{r}</div>", unsafe_allow_html=True)
+
+
 st.markdown("## 📈 Visualizations")
 
 st.markdown("### 1. Yearly Sales Trend")
