@@ -18,6 +18,7 @@ st.set_page_config(
     layout="wide"
 )
 
+
 #Data Yükleme ve Ön işleme kısmı
 @st.cache_data
 def load_data(path="data/BMW sales data (2010-2024) (1).csv"):
@@ -31,6 +32,42 @@ def load_data(path="data/BMW sales data (2010-2024) (1).csv"):
     return df
 
 df = load_data()
+
+
+# Sayfa başlığı ve resim kısmı
+st.markdown("<h1 style='text-align:center;' class='m-header' > BMW Sales Dashboard (2010–2024)</h1>", unsafe_allow_html=True)
+
+
+images = [
+    "img/bmw_3series.jpg",
+    "img/bmw_5series.jpg",
+    "img/bmw_7seriess.jpg",
+    "img/bmw_m5.jpg",
+    "img/bmw_x6.jpg",
+    "img/bmw_i8.jpg"
+]
+
+image_captions = {
+    "img/bmw_3series.jpg": "BMW 3 Series: Compact luxury sedan, best seller in Europe.",
+    "img/bmw_5series.jpg": "BMW 5 Series: Mid-size executive sedan, premium comfort.",
+    "img/bmw_7seriess.jpg": "BMW 7 Series: Flagship luxury sedan with high tech features.",
+    "img/bmw_m5.jpg": "BMW M5: High-performance sports sedan with strong engine.",
+    "img/bmw_x6.jpg": "BMW X6: Luxury SUV coupe, sporty and spacious.",
+    "img/bmw_i8.jpg": "BMW i8: Plug-in hybrid sports car, futuristic design."
+}
+
+cols = st.columns(len(images))
+selected_image = None
+for col, img_path in zip(cols, images):
+    if col.button("Select", key=img_path):
+        selected_image = img_path
+    col.image(img_path, width=160)
+
+if selected_image:
+    st.info(image_captions[selected_image])
+
+
+
 
 #Sidebar Kısmı
 with st.sidebar:
@@ -52,6 +89,8 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("### ℹ️ Dataset & Export")
     st.markdown("<p class='muted'>Use filters above then download the filtered CSV below.</p>", unsafe_allow_html=True)
+
+
 
 #Filtre uygulama kısmı
 mask = (
@@ -80,9 +119,6 @@ with st.sidebar:
 
 
 
-#Sayfa Başlığı kısmı
-st.markdown("<h1 style='text-align:center;'>BMW Sales Dashboard (2010–2024)</h1>", unsafe_allow_html=True)
-
 
 # Gösterge kartları
 total_sales = int(df_filtered['Sales_Volume'].sum()) if len(df_filtered) > 0 else 0
@@ -108,6 +144,7 @@ st.info("➡️ Grafik buraya eklenecek.")
 
 st.markdown("### 3. Price Distribution by Fuel Type")
 st.info("➡️ Grafik buraya eklenecek.")
+
 
 # Melisa Charts
 
@@ -141,6 +178,7 @@ if sample_size > 0:
     st.plotly_chart(fig_pc, use_container_width=True)
 else:
     st.info("No data for parallel coordinates with current filters.")
+
 
 # Zeynep Charts
 
