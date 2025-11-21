@@ -42,7 +42,11 @@ with st.sidebar:
 
     fuel_types = sorted(df['Fuel_Type'].dropna().unique().tolist())
     selected_fuels = st.multiselect("Fuel Types", fuel_types, default=fuel_types)
-    
+
+    st.markdown("---")
+    st.markdown("### ℹ️ Dataset & Export")
+    st.markdown("<p class='muted'>Use filters above then download the filtered CSV below.</p>", unsafe_allow_html=True)
+
 #Filtre uygulama kısmı
 mask = (
     (df['Year'] >= year_range[0]) & (df['Year'] <= year_range[1]) &
@@ -64,6 +68,9 @@ def df_to_csv_bytes(df_in):
 csv_bytes = df_to_csv_bytes(df_filtered)
 size_kb = len(csv_bytes) / 1024
 
+with st.sidebar:
+    st.markdown(f"<p style='font-size:14px; color:#cbd5e1;'>💾 Filtered CSV size: <b style='color:#ffffff;'>{size_kb:,.1f} KB</b></p>", unsafe_allow_html=True)
+    st.download_button("💾 Download Filtered CSV", data=csv_bytes, file_name="filtered_bmw_data.csv", mime="text/csv")
 
 
 
