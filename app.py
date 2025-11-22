@@ -5,7 +5,6 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 import io
-from PIL import Image
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
@@ -182,14 +181,26 @@ if len(insights) > 3:
 
 st.markdown("## 📈 Visualizations")
 
+# Mustafa Charts
+
 st.markdown("### 1. Yearly Sales Trend")
-st.info("➡️ Grafik buraya eklenecek.")
+
+sales_by_year = df_filtered.groupby('Year', as_index=False)['Sales_Volume'].sum().sort_values('Year')
+fig_line = px.line(sales_by_year, x='Year', y='Sales_Volume', markers=True)
+fig_line.update_traces(hovertemplate='Year: %{x}<br>Sales: %{y:,}')
+st.plotly_chart(fig_line, use_container_width=True)
 
 st.markdown("### 2. Region → Model Treemap")
-st.info("➡️ Grafik buraya eklenecek.")
+
+treemap_df = df_filtered.groupby(['Region', 'Model'], as_index=False)['Sales_Volume'].sum()
+fig_treemap = px.treemap(treemap_df, path=['Region', 'Model'], values='Sales_Volume')
+st.plotly_chart(fig_treemap, use_container_width=True)
 
 st.markdown("### 3. Price Distribution by Fuel Type")
-st.info("➡️ Grafik buraya eklenecek.")
+
+box_df = df_filtered[['Fuel_Type', 'Price_USD']].dropna()
+fig_box = px.box(box_df, x='Fuel_Type', y='Price_USD', points="outliers")
+st.plotly_chart(fig_box, use_container_width=True)
 
 
 # Melisa Charts
@@ -224,7 +235,7 @@ st.plotly_chart(fig_scatter, use_container_width=True)
 st.markdown("### 📊 5. Top-Selling Models (Horizontal Bar)")
 
 model_sales = df_filtered.groupby('Model', as_index=False)['Sales_Volume'].sum().sort_values(by='Sales_Volume', ascending=False)
-top_n = st.slider("Number of top models to show", 5, 25, 10, key="topn_slider")
+top_n = 10
 fig_bar = px.bar(
     model_sales.head(top_n),
     x='Sales_Volume',
@@ -262,6 +273,7 @@ if sample_size > 0:
         range_color=[pc_sample['Sales_Volume'].min(), pc_sample['Sales_Volume'].max()]
     )
     fig_pc.update_layout(
+        margin=dict(l=100, r=20, t=50, b=20),
         paper_bgcolor="#0e1117",
         plot_bgcolor="#1e1e1e",
         font=dict(color="white")
@@ -495,6 +507,7 @@ st.markdown("---")
 
 st.header("🔮 Machine Learning Analysis")
 
+#Zeynep ML Kısmı
 st.subheader("1️⃣ K-Means Clustering (Customer Segmentation)")
 
 col1, col2 = st.columns(2)
@@ -563,3 +576,103 @@ if len(ml_df) > 0:
     
 else:
     st.warning("⚠️ Not enough data.") 
+
+
+#Mustafa ML Kısmı
+
+st.markdown("---")
+st.header("Random Forest Learning")
+
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+from sklearn.ensemble import RandomForestRegressor
+
+st.subheader("Price Prediction Model")
+
+df_ml = df_filtered.copy()
+
+required = ['Price_USD', 'Mileage_KM', 'Engine_Size_L', 'Year', 'Transmission']
+
+if not all(col in df_ml.columns for col in required):
+    st.warning("Dataset missing required columns.")
+else:
+
+    df_ml = df_ml.dropna(subset=required)
+
+    if len(df_ml) < 50:
+        st.warning("Need more data for model training.")
+    else:
+        le = LabelEncoder()
+        df_ml['Transmission_enc'] = le.fit_transform(df_ml['Transmission'].astype(str))
+
+        feature_cols = ['Year', 'Mileage_KM', 'Engine_Size_L', 'Transmission_enc']
+
+        X = df_ml[feature_cols]
+        y = df_ml['Price_USD']
+
+        # Train-test split
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42
+        )
+
+        # Model
+        model = RandomForestRegressor(
+            n_estimators=200,
+            random_state=42
+        )
+        model.fit(X_train, y_train)
+
+        y_pred = model.predict(X_test)
+
+        
+        r2 = r2_score(y_test, y_pred)
+        mse = mean_squared_error(y_test, y_pred)
+        mae = mean_absolute_error(y_test, y_pred)
+
+        col1, col2, col3 = st.columns(3)
+        col1.metric("R² Score", f"{r2:.3f}")
+        col2.metric("MSE", f"{mse:,.0f}")
+        col3.metric("MAE", f"{mae:,.0f}")
+
+       
+        fig_reg = px.scatter(
+            x=y_test,
+            y=y_pred,
+            labels={'x': 'Actual Price', 'y': 'Predicted Price'},
+            opacity=0.6
+        )
+        fig_reg.add_shape(
+            type="line",
+            x0=y_test.min(), y0=y_test.min(),
+            x1=y_test.max(), y1=y_test.max(),
+            line=dict(color="red", dash="dash")
+        )
+        st.plotly_chart(fig_reg, use_container_width=True)
+        
+      
+st.subheader("📉 Correlation Matrix")
+
+corr_df = df_ml.copy()
+corr_df['Transmission_enc'] = corr_df['Transmission'].astype('category').cat.codes
+numeric_cols = corr_df.select_dtypes(include=['int64', 'float64', 'Int64']).columns
+
+corr_matrix = corr_df[numeric_cols].corr()
+
+fig_corr = px.imshow(
+    corr_matrix,
+    text_auto=True,
+    aspect="auto",
+    color_continuous_scale="RdBu",
+    zmin=-1,
+    zmax=1,
+    title="Correlation Matrix"
+)
+
+st.plotly_chart(fig_corr, use_container_width=True)
+
+st.info("""
+**Interpretation:**  
+If all correlations with *Price_USD* remain close to zero (|r| < 0.05),
+the dataset does not contain meaningful patterns for price prediction.
+In such cases, low or negative R² scores are expected and normal.
+""")
