@@ -18,6 +18,62 @@ st.set_page_config(
 )
 
 
+# Özel arayüz stillendirmesi
+
+st.markdown("""
+    <style>
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+        padding-top: 20px;
+        color: white;
+    }
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] span,
+    section[data-testid="stSidebar"] div {
+        color: white !important;
+        font-size: 15px !important;
+    }
+    .kpi-card {
+        background: #c0c0c0;
+        padding: 18px;
+        border-radius: 12px;
+        box-shadow: 0px 6px 22px rgba(14,30,37,0.06);
+        text-align: center;
+    }
+    .kpi-card h3 { color: #880000; font-size: 30px; margin-bottom: 6px; }
+    .kpi-card h2 { color: #12233b; font-size: 30px; margin-top: 0px; }
+            
+       /* ana başlık renklendirme */
+    .m-header {
+        font-size: 48px;
+        font-weight: 900;
+        text-align: center;
+        background: linear-gradient(
+            -45deg,
+            #0033a0,
+            #0085ca,
+            #ffffff,
+            #cc0000,
+            #b30000
+        );
+        background-size: 400% 400%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: bmwmove 8s ease infinite;
+        margin-bottom: 15px;
+    }
+    @keyframes bmwmove {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+
+    </style>
+""", unsafe_allow_html=True)
+
+
+
 #Data Yükleme ve Ön işleme kısmı
 @st.cache_data
 def load_data(path="data/BMW sales data (2010-2024) (1).csv"):
@@ -131,6 +187,7 @@ with k2:
     st.markdown(f"""<div class="kpi-card"><h3>Average Price</h3><h2>${avg_price:,.0f}</h2><div class="muted">Filtered average</div></div>""", unsafe_allow_html=True)
 with k3:
     st.markdown(f"""<div class="kpi-card"><h3>Median Mileage</h3><h2>{median_mileage:,.0f} KM</h2><div class="muted">Filtered median</div></div>""", unsafe_allow_html=True)
+
 
 
 # Otomatik analiz kartları
