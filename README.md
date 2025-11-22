@@ -8,6 +8,7 @@
 ![Plotly](https://img.shields.io/badge/Plotly-5.22.0-3F4F75?style=for-the-badge&logo=plotly&logoColor=white)
 
 **Interactive Data Analytics Platform for BMW Sales Performance**
+<img width="1914" height="918" alt="BMW Sales Dashboard" src="https://github.com/user-attachments/assets/354d6ffa-aaea-4372-ba09-037002b7b0ac" />
 
 </div>
 
