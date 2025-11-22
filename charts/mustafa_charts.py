@@ -90,33 +90,29 @@ else:
         # ----------------------------------------------------------
         # CORRELATION ANALYSIS 
         # ----------------------------------------------------------
-        import seaborn as sns
-        import matplotlib.pyplot as plt
-
         st.subheader("📉 Correlation Matrix")
 
-        corr_df = df_ml.copy()
-        corr_df['Transmission_enc'] = corr_df['Transmission'].astype('category').cat.codes
-        numeric_cols = corr_df.select_dtypes(include=['int64', 'float64', 'Int64']).columns
+corr_df = df_ml.copy()
+corr_df['Transmission_enc'] = corr_df['Transmission'].astype('category').cat.codes
+numeric_cols = corr_df.select_dtypes(include=['int64', 'float64', 'Int64']).columns
 
-        corr_matrix = corr_df[numeric_cols].corr()
+corr_matrix = corr_df[numeric_cols].corr()
 
-        fig, ax = plt.subplots(figsize=(12, 4))
-        sns.heatmap(
-            corr_matrix,
-            annot=True,
-            fmt=".2f",
-            cmap="RdBu",
-            center=0,
-            linewidths=0.5,
-            cbar=True
-        )
-        plt.title("Correlation Matrix", fontsize=14)
-        st.pyplot(fig)
+fig_corr = px.imshow(
+    corr_matrix,
+    text_auto=True,
+    aspect="auto",
+    color_continuous_scale="RdBu",
+    zmin=-1,
+    zmax=1,
+    title="Correlation Matrix"
+)
 
-        st.info("""
-        **Interpretation:**  
-        If all correlations with *Price_USD* remain close to zero (|r| < 0.05),  
-        the dataset does not contain meaningful patterns for price prediction.  
-        In such cases, low or negative R² scores are expected and normal.
-        """)
+st.plotly_chart(fig_corr, use_container_width=True)
+
+st.info("""
+**Interpretation:**  
+If all correlations with *Price_USD* remain close to zero (|r| < 0.05),
+the dataset does not contain meaningful patterns for price prediction.
+In such cases, low or negative R² scores are expected and normal.
+""")
