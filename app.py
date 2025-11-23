@@ -315,27 +315,48 @@ st.plotly_chart(fig_bar, use_container_width=True)
 
 
 
-st.markdown("### 🧭 6. Parallel Coordinates: Engine, Price, Mileage")
+st.markdown("### 🧭 6. Parallel Coordinates: Engine, Price, Mileage, Volume, Year")
 
-pc_df = df_filtered[['Engine_Size_L','Price_USD','Mileage_KM','Sales_Volume']].dropna()
+
+pc_df = df_filtered[['Engine_Size_L', 'Price_USD', 'Mileage_KM', 'Sales_Volume', 'Year']].dropna()
+
 sample_size = min(len(pc_df), 1000)
+
 if sample_size > 0:
     pc_sample = pc_df.sample(sample_size, random_state=1)
+
+    
     fig_pc = px.parallel_coordinates(
         pc_sample,
         color='Sales_Volume',
-        dimensions=['Engine_Size_L','Price_USD','Mileage_KM'],
-        labels={'Engine_Size_L':'Engine (L)','Price_USD':'Price (USD)','Mileage_KM':'Mileage (KM)'},
+        dimensions=[
+            'Engine_Size_L',
+            'Price_USD',
+            'Mileage_KM',
+            'Sales_Volume',
+            'Year'
+        ],
+        labels={
+            'Engine_Size_L': 'Engine (L)',
+            'Price_USD': 'Price (USD)',
+            'Mileage_KM': 'Mileage (KM)',
+            'Sales_Volume': 'Sales Volume',
+            'Year': 'Year'
+        },
         color_continuous_scale=px.colors.sequential.Viridis,
         range_color=[pc_sample['Sales_Volume'].min(), pc_sample['Sales_Volume'].max()]
     )
+
+    
     fig_pc.update_layout(
         margin=dict(l=100, r=20, t=50, b=20),
         paper_bgcolor="#0e1117",
         plot_bgcolor="#1e1e1e",
         font=dict(color="white")
     )
+
     st.plotly_chart(fig_pc, use_container_width=True)
+
 else:
     st.info("No data for parallel coordinates with current filters.")
 
