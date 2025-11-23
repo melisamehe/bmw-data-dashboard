@@ -58,6 +58,19 @@ BMW Sales Analysis Dashboard is an interactive **Streamlit**-based web applicati
 ```
 
 ---
+📂 Dataset
+The dataset used in this project is publicly available on Kaggle:
+
+🔗BMW Sales 2010-2024 Dataset
+https://www.kaggle.com/datasets/y0ussefkandil/bmw-sales2010-2024
+
+This dataset include:
+-BMW sales records between 2010 and 2014
+-Regional sales distribution
+-Model types, engine size, fuel type, mileage, and pricing
+-Cleaned and preproccessed entries suitable for data visualization and machine learning
+
+---
 
 ## 🚀 Installation
 
